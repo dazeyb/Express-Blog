@@ -4,9 +4,7 @@
 		<meta charset="UTF-8" />
 		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<link rel="stylesheet" href="/styles/main.css" />
-		<link rel="scripts" href="/scripts/app.js" />
-		<title>Blog App</title>
+		<title>BLog | Articles</title>
 	</head>
 	<body>
 		<nav>
@@ -20,5 +18,16 @@
 				</li>
 			</ul>
 		</nav>
+		<main>
+			<form action="/articles" method="POST">
+				<p>
+					<input type="text" name="title" placeholder="Title" />
+				</p>
+				<p>
+					<textarea type="text" name="body" placeholder="Body"></textarea>
+				</p>
+				<input type="submit" value="Create Article" />
+			</form>
+		</main>
 	</body>
 </html>

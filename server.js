@@ -18,6 +18,8 @@ app.set("view engine", "ejs");
 app.use(express.urlencoded({ extended: true }));
 // method override middleware
 app.use(methodOverride("_method"));
+// middleware to serve public as static files
+app.use(express.static(__dirname + "/public"));
 
 /* ==== Routes/Controllers ==== */
 
@@ -28,6 +30,9 @@ app.get("/", function (req, res) {
 
 // author controller
 app.use("/authors", controllers.authors);
+
+// article controller
+app.use("/articles", controllers.articles);
 
 /* ==== Server Listener ==== */
 app.listen(PORT, function () {
