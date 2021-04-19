@@ -23,7 +23,7 @@ app.use(methodOverride("_method"));
 
 // Home routes
 app.get("/", function (req, res) {
-	res.send("home");
+	res.render("home");
 });
 
 // author controller

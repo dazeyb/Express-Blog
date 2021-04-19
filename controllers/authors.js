@@ -17,4 +17,15 @@ const db = require("../models");
  * Delete - DELETE - /authors/:id  - Functional - Deletes author by id from request
  */
 
+// Index
+router.get("/", function (req, res) {
+	// mongoose
+	db.Author.find({}, function (err, allAuthors) {
+		if (err) return res.send(err);
+
+		const context = { authors: allAuthors };
+		return res.render("authors/index", context);
+	});
+});
+
 module.exports = router;
