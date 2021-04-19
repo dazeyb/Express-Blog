@@ -33,4 +33,23 @@ router.get("/new", function (req, res) {
 	res.render("authors/new");
 });
 
+// Show
+router.get("/:id", function (req, res) {
+	db.Author.findById(req.params.id, function (err, foundAuthor) {
+		if (err) return res.send(err);
+
+		const context = { author: foundAuthor };
+		return res.render("authors/show", context);
+	});
+});
+
+// Create
+router.post("/", function (req, res) {
+	db.Author.create(req.body, function (err, createdAuthor) {
+		if (err) return res.send(err);
+
+		return res.redirect("/authors");
+	});
+});
+
 module.exports = router;
