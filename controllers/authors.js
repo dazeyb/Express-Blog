@@ -52,4 +52,48 @@ router.post("/", function (req, res) {
 	});
 });
 
+// Edit
+// presentational form
+router.get("/:id/edit", function (req, res) {
+	db.Author.findById(req.params.id, function (err, foundAuthor) {
+		if (err) res.send(err);
+
+		const context = { author: foundAuthor };
+		return res.render("authors/edit", context);
+	});
+});
+
+// Update
+// logic to PUT/REPLACE data in the database
+router.put("/:id", function (req, res) {
+	db.Author.findByIdAndUpdate(
+		// id to find
+		req.params.id,
+		// data to update
+		{
+			$set: {
+				// name: req.body.name
+				// additional key:value pairs from model
+				...req.body,
+			},
+		},
+		// return the new database object
+		{ new: true },
+		// callback function upon completion
+		function (err, updatedAuthor) {
+			if (err) return res.send(err);
+			return res.redirect(`/authors/${updatedAuthor._id}`);
+		}
+	);
+});
+
+// Delete
+router.delete("/:id", function (req, res) {
+	db.Author.findByIdAndDelete(req.params.id, function (err, deletedAuthor) {
+		if (err) return res.send(err);
+
+		return res.redirect("/authors");
+	});
+});
+
 module.exports = router;
