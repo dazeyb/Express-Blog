@@ -1,12 +1,14 @@
 const mongoose = require("mongoose");
 
 // set up schema for validation
+// example articles: ["ayches976729djsl"]
 const authorSchema = new mongoose.Schema(
 	{
 		name: {
 			type: String,
 			required: [true, "You must provide a name property"],
 		},
+		articles: [{ type: mongoose.Schema.Types.ObjectId, ref: "Article" }],
 	},
 	{
 		timestamps: true,
