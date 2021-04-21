@@ -28,6 +28,7 @@
 				<ul>
 					<li>Title: <%= article.title %></li>
 					<li>Body: <%= article.body %></li>
+					<li>Author: <%= article.author.name %></li>
 				</ul>
 			</section>
 			<form action="/articles/<%= article._id %>?_method=DELETE" method="POST">

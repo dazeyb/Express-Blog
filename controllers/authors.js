@@ -35,12 +35,15 @@ router.get("/new", function (req, res) {
 
 // Show
 router.get("/:id", function (req, res) {
-	db.Author.findById(req.params.id, function (err, foundAuthor) {
-		if (err) return res.send(err);
+	// .populate populates show page with all articles on show page for authors. the string it takes in is the key that we're populating from the schema (not the model)
+	db.Author.findById(req.params.id)
+		.populate("articles")
+		.exec(function (err, foundAuthor) {
+			if (err) return res.send(err);
 
-		const context = { author: foundAuthor };
-		return res.render("authors/show", context);
-	});
+			const context = { author: foundAuthor };
+			return res.render("authors/show", context);
+		});
 });
 
 // Create
@@ -88,11 +91,18 @@ router.put("/:id", function (req, res) {
 });
 
 // Delete
+// this is a cascade delete, finding all authors by the same author and deleting them, because we're deleting the author. this is essentially about database memory and storage, deleting all associated resources. since the author is the one in the one to many, we have to delete the many when we delete the one.
 router.delete("/:id", function (req, res) {
 	db.Author.findByIdAndDelete(req.params.id, function (err, deletedAuthor) {
 		if (err) return res.send(err);
 
-		return res.redirect("/authors");
+		db.Article.deleteMany(
+			{ author: deletedAuthor._id },
+			function (err, deletedArticles) {
+				if (err) return res.send(err);
+				return res.redirect("/authors");
+			}
+		);
 	});
 });
 

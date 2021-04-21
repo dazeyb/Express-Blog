@@ -29,17 +29,29 @@ router.get("/", function (req, res) {
 
 // New
 router.get("/new", function (req, res) {
-	res.render("articles/new");
+	db.Author.find({}, function (err, foundAuthors) {
+		if (err) return res.send(err);
+
+		const context = { authors: foundAuthors };
+		res.render("articles/new", context);
+	});
 });
+
+// router.get("/new", function (req, res) {
+// 	res.render("articles/new");
+// });
 
 // Show
 router.get("/:id", function (req, res) {
-	db.Article.findById(req.params.id, function (err, foundArticle) {
-		if (err) return res.send(err);
+	db.Article.findById(req.params.id)
+		//
+		.populate("author") // db.Author.findById()
+		.exec(function (err, foundArticle) {
+			if (err) return res.send(err);
 
-		const context = { article: foundArticle };
-		res.render("articles/show", context);
-	});
+			const context = { article: foundArticle };
+			res.render("articles/show", context);
+		});
 });
 
 // Create
@@ -47,7 +59,17 @@ router.post("/", function (req, res) {
 	db.Article.create(req.body, function (err, createdArticle) {
 		if (err) return res.send(err);
 
-		return res.redirect("/articles");
+		// allows us to add an article to the author
+		//.exec short for execute. used to help stack functions. similar to .then. after this query, exectute this one!
+		db.Author.findById(createdArticle.author).exec(function (err, foundAuthor) {
+			if (err) return res.send(err);
+
+			// update the author articles array
+			foundAuthor.articles.push(createdArticle); // adds article to the author
+			foundAuthor.save(); // save relationship to database, commits to memory
+
+			return res.redirect("/articles");
+		});
 	});
 });
 
@@ -89,7 +111,14 @@ router.delete("/:id", function (req, res) {
 	db.Article.findByIdAndDelete(req.params.id, function (err, deletedArticle) {
 		if (err) return res.send(err);
 
-		return res.redirect("/articles");
+		// we find the author, take the author, remove the article from the author so that we remove the ID that we put into the array from memory.
+
+		db.Author.findById(deletedArticle.author, function (err, foundAuthor) {
+			foundAuthor.articles.remove(deletedArticle);
+			foundAuthor.save();
+
+			return res.redirect("/articles");
+		});
 	});
 });
 

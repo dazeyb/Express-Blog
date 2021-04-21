@@ -26,6 +26,14 @@
 				<p>
 					<textarea type="text" name="body" placeholder="Body"></textarea>
 				</p>
+				<p>
+					<select name="author">
+						<option value="test">author placeholder. good question ben!</option>
+						<% authors.forEach ( author => { %>
+						<option value="<%= author._id %>"><%= author.name %></option>
+						<% }) %>
+					</select>
+				</p>
 				<input type="submit" value="Create Article" />
 			</form>
 		</main>
