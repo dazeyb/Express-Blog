@@ -1,4 +1,4 @@
-// // // // NOTE TO APRIL : make a branch 'ejs-partials' and submit a pull request to the express-blog repo. Once the pull request has been accepted, then the students can `git pull` to get my branch, which will be empty except for the PLAN.js
+// // // // NOTE TO APRIL : make a branch 'ejs-partials' and submit a pull request to the express-blog repo. Once the pull request has been accepted, then the students can `git pull` to get my branch, which will be the same except for the PLAN.js
 
 // // Steps for creating and using EJS Partials
 
