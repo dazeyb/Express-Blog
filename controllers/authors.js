@@ -18,14 +18,31 @@ const db = require("../models");
  */
 
 // Index
-router.get("/", function (req, res) {
+// async - await 
+// try - catch
+router.get("/",  async function (req, res) {
 	// mongoose
+	/* 
 	db.Author.find({}, function (err, allAuthors) {
 		if (err) return res.send(err);
 
 		const context = { authors: allAuthors };
 		return res.render("authors/index", context);
-	});
+	}); 
+	*/
+
+	try {
+		// try to do stuff
+		const allAuthors = await db.Author.find({});
+		const context = { authors: allAuthors };
+	
+		return res.render("authors/index", context);
+	} catch(err) {
+		// if error anywhere then respond with error
+		console.log(err);
+		return res.send(err);
+	}
+
 });
 
 // New
@@ -92,8 +109,13 @@ router.put("/:id", function (req, res) {
 
 // Delete
 // this is a cascade delete, finding all authors by the same author and deleting them, because we're deleting the author. this is essentially about database memory and storage, deleting all associated resources. since the author is the one in the one to many, we have to delete the many when we delete the one.
-router.delete("/:id", function (req, res) {
-	db.Author.findByIdAndDelete(req.params.id, function (err, deletedAuthor) {
+
+// 1. label function as async
+// 2. set the try catch
+// 3. set the catch first
+// 4. set the try using awaits on all queries
+router.delete("/:id", async function (req, res) {
+	/* db.Author.findByIdAndDelete(req.params.id, function (err, deletedAuthor) {
 		if (err) return res.send(err);
 
 		db.Article.deleteMany(
@@ -103,7 +125,20 @@ router.delete("/:id", function (req, res) {
 				return res.redirect("/authors");
 			}
 		);
-	});
+	}); */
+
+	try {
+
+		const deletedAuthor = await db.Author.findByIdAndDelete(req.params.id);
+		const deletedArticles = await db.Article.deleteMany({ author: deletedAuthor._id });
+
+		return res.redirect("/authors");
+	} catch(err) {
+
+		console.log(err);
+		return res.send(err);
+	}
+
 });
 
 module.exports = router;
