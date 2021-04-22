@@ -81,3 +81,167 @@ const User = mongoose.model("User", userSchema);
 
 module.exports = User;
 ```
+
+>NOTE: Do not forget to require in the models/index.js!
+
+4. Add a route an auth controller to handle the Register Requests
+
+In controllers create an auth.js 
+```js 
+// require
+const express = require("express");
+const router = express.Router();
+const bcrypt = require("bcryptjs");
+const db = require("../models");
+
+/* 
+  GET - /register Presentational Form
+  POST - /register functional route
+  GET - /login Presentational Form
+  POST - /login functional
+*/
+
+
+module.exports = router;
+```
+
+>NOTE: Do not forget to require in the controllers/index.js!
+
+5. Require the controller in the server.js 
+
+server.js 
+
+```js 
+* ==== Routes/Controllers ==== */
+//...
+
+// authentication and authorization
+app.use("/", controllers.auth);
+
+// author controller
+app.use("/authors", controllers.authors);
+
+// article controller
+app.use("/articles", controllers.articles);
+```
+
+6. Stub up the Routes you will need in the Auth Controller
+
+auth.js
+
+```js 
+//...
+
+router.get("/register", function(req,res){
+  res.render("auth/register");
+});
+
+router.post("/register", async function(req,res){
+  res.send(req.body);
+});
+
+router.get("/login",function(req,res){
+  res.render("auth/login");
+});
+
+router.post("/login", async function(req,res){
+  res.send(req.body);
+});
+```
+
+7. Create the ejs for Register and Login 
+
+In the views directory create a new directory labeled auth. Inside the auth directory create two new ejs fills labeled register.ejs and login.ejs.
+
+register.ejs
+```html 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register</title>
+</head>
+<body>
+  <h1>Register for an Account</h1>
+
+  <form action="/register" method="POST">
+    <p>
+      <input type="text" name="username" placeholder="Username" required minlength="5">
+    </p>
+    <p>
+      <input type="email" name="email" placeholder="Email"  required>
+    </p>
+    <p>
+      <input type="password" name="password" placeholder="Password"  required minlength="8">
+    </p>
+
+    <input type="submit" value="Register">
+  </form>
+  
+</body>
+</html>
+```
+
+login.ejs
+```html 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+</head>
+<body>
+  <h1>Welcome Back!</h1>
+
+  <form action="/login" method="POST">
+    <p>
+      <input type="email" name="email" placeholder="Email"  required>
+    </p>
+    <p>
+      <input type="password" name="password" placeholder="Password"  required minlength="8">
+    </p>
+    <input type="submit" value="Login">
+  </form>
+  
+</body>
+</html>
+```
+
+8. Refactor the update route to create a user. 
+
+controllers/auth.js
+
+```js 
+router.post("/register", async function(req,res){
+  try {
+  // step check if user exists 
+  const foundUser = await db.User.findOne({email: req.body.email});
+  // if so redirect to login 
+  if(foundUser){
+    return res.redirect("/login");
+  }
+  // if not create user and redirect to login
+
+	// salt will created a more complicated hash
+  const salt = await bcrypt.genSalt(10);
+	// hash will convert our password into something more secure
+	// test1234 => "$2a$10$5vR9VhGpkARz6EFPdkuNQ.aZNRGUgSCNSKEb9Xp1IKzrfxYETlkB2"
+  const hash = await bcrypt.hash(req.body.password, salt);
+  
+  req.body.password = hash;
+
+	// create user in database
+  const newUser = await db.User.create(req.body);
+  
+  return res.redirect("/login");
+
+  } catch(err){
+    console.log(err);
+    return res.send(err);
+  }
+});
+```

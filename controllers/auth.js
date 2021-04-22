@@ -25,10 +25,15 @@ router.post("/register", async function(req,res){
   }
   // if not create user and redirect to login
 
+	// salt will created a more complicated hash
   const salt = await bcrypt.genSalt(10);
+	// hash will convert our password into something more secure
+	// test1234 => "$2a$10$5vR9VhGpkARz6EFPdkuNQ.aZNRGUgSCNSKEb9Xp1IKzrfxYETlkB2"
   const hash = await bcrypt.hash(req.body.password, salt);
+  
   req.body.password = hash;
 
+	// create user in database
   const newUser = await db.User.create(req.body);
   
   return res.redirect("/login");
