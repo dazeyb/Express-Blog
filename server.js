@@ -48,6 +48,21 @@ app.use(function(req,res,next){
 	next();
 });
 
+// add user credientials to ejs files
+app.use(function(req,res,next){
+	app.locals.user = req.session.currentUser;
+	next();
+});
+
+// authRequired middleware
+const authRequired = function(req,res,next){
+	if(req.session.currentUser){
+		return next();
+	}
+
+	return res.redirect("/login");
+};
+
 /* ==== Routes/Controllers ==== */
 
 // Home routes
@@ -59,10 +74,10 @@ app.get("/", function (req, res) {
 app.use("/", controllers.auth);
 
 // author controller
-app.use("/authors", controllers.authors);
+app.use("/authors", authRequired, controllers.authors);
 
 // article controller
-app.use("/articles", controllers.articles);
+app.use("/articles",authRequired, controllers.articles);
 
 /* ==== Server Listener ==== */
 app.listen(PORT, function () {

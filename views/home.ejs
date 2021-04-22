@@ -11,6 +11,15 @@
 	<body>
 		<nav>
 			<h1>Welcome to Blog App!</h1>
+			<% if (user) { %>
+				<h4><%= user.username %></h4>
+				<form action="/logout?_method=DELETE" method="POST">
+					<input type="submit" value="Logout">
+				</form>
+			<% } else { %>
+				<a href="/login">Login</a>
+				<a href="/register">Register</a>
+			<% } %>
 			<ul>
 				<li>
 					<a href="/authors">Authors</a>
