@@ -245,3 +245,90 @@ router.post("/register", async function(req,res){
   }
 });
 ```
+
+9. Time to add Authentication with the Post Login Route
+
+controllers/auth.js
+
+```js 
+
+router.post("/login", async function(req,res){
+  try {
+   // check if the user exists 
+   const foundUser = await db.User.findOne({email: req.body.email});
+   // if not
+     // redirect to register
+  if(!foundUser) return res.redirect("/register");
+
+  // if the user exists
+    // validate the user if passwords match -> login 
+    // .compare(body password, hashed password) => return true or false
+  const match = await bcrypt.compare(req.body.password, foundUser.password);
+
+  // if not match send error
+  if(!match) return res.send("password invalid");
+
+  // if match create the session and redirect to home\
+  // here we have created the key card
+  req.session.currentUser = {
+    id: foundUser._id,
+    username: foundUser.username
+  }
+  
+  return res.redirect("/");
+
+  } catch(err) {
+    console.log(err);
+    res.send(err);
+  }
+});
+```
+
+10. Create middleware for user credentials. 
+
+server.js 
+
+```js
+/* ==== Middleware ==== */
+//...
+
+// add user credientials to ejs files
+app.use(function(req,res,next){
+	app.locals.user = req.session.currentUser;
+	next();
+});
+
+// authRequired middleware for gate keeping
+const authRequired = function(req,res,next){
+	if(req.session.currentUser){
+		return next();
+	}
+
+	return res.redirect("/login");
+};
+```
+
+11. Use the Auth Required Middleware for gate keeping other routes. 
+
+server.js
+```js
+/* ==== Routes/Controllers ==== */
+//...
+
+// author controller
+app.use("/authors", authRequired, controllers.authors);
+
+// article controller
+app.use("/articles", authRequired, controllers.articles);
+```
+
+12. Add a Delete route for Logout 
+
+controllers/auth.js
+
+```js 
+router.delete("/logout", async function(req,res){
+  await req.session.destroy();
+  return res.redirect("/");
+});
+```
