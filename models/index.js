@@ -1,8 +1,11 @@
 // require mongoose
 const mongoose = require("mongoose");
+//adds ability to read .env file
+require('dotenv').config();
 
 // connect to mongodb
-const dbUrl = "mongodb://localhost:27017/blogdb";
+// const dbUrl = "mongodb://localhost:27017/blogdb";
+const dbUrl = process.env.MONGO_URI;
 // here i am naming the database blogdb and creating it
 
 // connect mongoose

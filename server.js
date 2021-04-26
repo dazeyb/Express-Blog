@@ -11,6 +11,8 @@ const controllers = require("./controllers");
 const app = express();
 
 /* ==== Configuration ==== */
+//adds ability to read .env file
+require('dotenv').config();
 const PORT = 4000;
 
 app.set("view engine", "ejs");
@@ -28,9 +30,9 @@ app.use(express.static(__dirname + "/public"));
 // session(config object)
 app.use(session({
 	// where to store the sessions in mongodb
-	store: MongoStore.create({ mongoUrl: "mongodb://localhost:27017/blogdb"}),
+	store: MongoStore.create({ mongoUrl: process.env.MONGO_URI}),
 	// secret key is used to sign every cookie to say its is valid
-	secret: "Super Secret Waffles",
+	secret: process.env.SESSION_SECRET,
 	resave: false,
 	saveUninitialized: false,
 	// configure the experation of the cookie
