@@ -13,7 +13,8 @@ const app = express();
 /* ==== Configuration ==== */
 //adds ability to read .env file
 require('dotenv').config();
-const PORT = 4000;
+// use the env port OR the port 4000
+const PORT = process.env.PORT || 4000;
 
 app.set("view engine", "ejs");
 
