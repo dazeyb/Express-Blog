@@ -18,11 +18,11 @@ const db = require("../models");
  */
 
 // Index
-// async - await 
+// async - await
 // try - catch
-router.get("/",  async function (req, res) {
-	// mongoose
-	/* 
+router.get("/", async function (req, res) {
+  // mongoose
+  /* 
 	db.Author.find({}, function (err, allAuthors) {
 		if (err) return res.send(err);
 
@@ -31,80 +31,83 @@ router.get("/",  async function (req, res) {
 	}); 
 	*/
 
-	try {
-		// try to do stuff
-		const allAuthors = await db.Author.find({});
-		const context = { authors: allAuthors };
-	
-		return res.render("authors/index", context);
-	} catch(err) {
-		// if error anywhere then respond with error
-		console.log(err);
-		return res.send(err);
-	}
+  // try to do stuff
+  try {
+    const query = req.query.name
+      ? { name: { $regex: req.query.name, $options: "i" } }
+      : {};
 
+    const allAuthors = await db.Author.find(query);
+    const context = { authors: allAuthors };
+
+    return res.render("authors/index", context);
+  } catch (err) {
+    // if error anywhere then respond with error
+    console.log(err);
+    return res.send(err);
+  }
 });
 
 // New
 router.get("/new", function (req, res) {
-	res.render("authors/new");
+  res.render("authors/new");
 });
 
 // Show
 router.get("/:id", function (req, res) {
-	// .populate populates show page with all articles on show page for authors. the string it takes in is the key that we're populating from the schema (not the model)
-	db.Author.findById(req.params.id)
-		.populate("articles")
-		.exec(function (err, foundAuthor) {
-			if (err) return res.send(err);
+  // .populate populates show page with all articles on show page for authors. the string it takes in is the key that we're populating from the schema (not the model)
+  db.Author.findById(req.params.id)
+    .populate("articles")
+    .exec(function (err, foundAuthor) {
+      if (err) return res.send(err);
 
-			const context = { author: foundAuthor };
-			return res.render("authors/show", context);
-		});
+      const context = { author: foundAuthor };
+      return res.render("authors/show", context);
+    });
 });
 
 // Create
 router.post("/", function (req, res) {
-	db.Author.create(req.body, function (err, createdAuthor) {
-		if (err) return res.send(err);
+  db.Author.create(req.body, function (err, createdAuthor) {
+    if (err) return res.send(err);
 
-		return res.redirect("/authors");
-	});
+    return res.redirect("/authors");
+  });
 });
 
 // Edit
 // presentational form
 router.get("/:id/edit", function (req, res) {
-	db.Author.findById(req.params.id, function (err, foundAuthor) {
-		if (err) res.send(err);
+  db.Author.findById(req.params.id, function (err, foundAuthor) {
+    if (err) res.send(err);
 
-		const context = { author: foundAuthor };
-		return res.render("authors/edit", context);
-	});
+    const context = { author: foundAuthor };
+    return res.render("authors/edit", context);
+  });
 });
 
 // Update
 // logic to PUT/REPLACE data in the database
 router.put("/:id", function (req, res) {
-	db.Author.findByIdAndUpdate(
-		// id to find
-		req.params.id,
-		// data to update
-		{
-			$set: {
-				// name: req.body.name
-				// additional key:value pairs from model
-				...req.body,
-			},
-		},
-		// return the new database object
-		{ new: true },
-		// callback function upon completion
-		function (err, updatedAuthor) {
-			if (err) return res.send(err);
-			return res.redirect(`/authors/${updatedAuthor._id}`);
-		}
-	);
+  db.Author.findByIdAndUpdate(
+    // id to find
+    req.params.id,
+    // data to update
+    {
+      $set: {
+        // name: req.body.name
+        // additional key:value pairs from model
+        ...req.body,
+      },
+    },
+    // return the new database object
+    { new: true },
+    // callback function upon completion
+    function (err, updatedAuthor) {
+      if (err) return res.send(err);
+      return res.redirect(`/authors/${updatedAuthor._id}`);
+    }
+  );
 });
 
 // Delete
@@ -115,7 +118,7 @@ router.put("/:id", function (req, res) {
 // 3. set the catch first
 // 4. set the try using awaits on all queries
 router.delete("/:id", async function (req, res) {
-	/* db.Author.findByIdAndDelete(req.params.id, function (err, deletedAuthor) {
+  /* db.Author.findByIdAndDelete(req.params.id, function (err, deletedAuthor) {
 		if (err) return res.send(err);
 
 		db.Article.deleteMany(
@@ -127,18 +130,17 @@ router.delete("/:id", async function (req, res) {
 		);
 	}); */
 
-	try {
+  try {
+    const deletedAuthor = await db.Author.findByIdAndDelete(req.params.id);
+    const deletedArticles = await db.Article.deleteMany({
+      author: deletedAuthor._id,
+    });
 
-		const deletedAuthor = await db.Author.findByIdAndDelete(req.params.id);
-		const deletedArticles = await db.Article.deleteMany({ author: deletedAuthor._id });
-
-		return res.redirect("/authors");
-	} catch(err) {
-
-		console.log(err);
-		return res.send(err);
-	}
-
+    return res.redirect("/authors");
+  } catch (err) {
+    console.log(err);
+    return res.send(err);
+  }
 });
 
 module.exports = router;
