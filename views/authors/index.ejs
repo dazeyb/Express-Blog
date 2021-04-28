@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="/styles/gallery.css" />
     <title>Blog | Authors</title>
   </head>
   <body>
@@ -25,23 +26,23 @@
     <main>
       <h2>List of Authors</h2>
 
-      <form action="" method="GET">
-        <input type="text" name="name" placeholder="Name" />
-        <input type="submit" value="Search" />
-      </form>
-      <a href="/authors">Clear Search</a>
+      <div class="search_form">
+        <form action="" method="GET">
+          <input type="text" name="name" placeholder="Name" />
+          <input type="submit" value="Search" />
+        </form>
+        <a href="/authors">Clear Search</a>
+      </div>
 
-      <% if(!authors.length) { %>
-      <p>There are no authors available yet.</p>
-      <% } %>
-
-      <ul>
-        <% authors.forEach(author => { %>
-        <li>
-          <a href="/authors/<%= author._id %>"> <%= author.name %></a>
-        </li>
+      <section class="gallery">
+        <% if(!authors.length) { %>
+        <p>There are no authors available yet.</p>
+        <% } %> <% authors.forEach(author => { %>
+        <a class="card" href="/authors/<%= author._id %>">
+          <div class="card__title"><%= author.name %></div>
+        </a>
         <% })%>
-      </ul>
+      </section>
     </main>
   </body>
 </html>

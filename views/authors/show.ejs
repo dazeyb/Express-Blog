@@ -1,48 +1,48 @@
 <!DOCTYPE html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
-		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-		<title>Blog | Authors</title>
-	</head>
-	<body>
-		<nav>
-			<h1>Welcome to Blog App</h1>
-			<ul>
-				<li>
-					<a href="/authors">Authors</a>
-				</li>
-				<li>
-					<a href="/authors/new">Add an Author</a>
-				</li>
-				<li>
-					<a href="/articles">Articles</a>
-				</li>
-			</ul>
-		</nav>
-		<main>
-			<section>
-				<h2>Author Info</h2>
-				<a href="/authors/<%= author._id %>/edit">Edit</a>
-				<ul>
-					<li>Name: <%= author.name %></li>
-				</ul>
-			</section>
-			<form action="/authors/<%= author._id %>?_method=DELETE" method="POST">
-				<input type="submit" value="Delete" />
-			</form>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Blog | Authors</title>
+  </head>
+  <body>
+    <nav>
+      <h1>Welcome to Blog App</h1>
+      <ul>
+        <li>
+          <a href="/authors">Authors</a>
+        </li>
+        <li>
+          <a href="/authors/new">Add an Author</a>
+        </li>
+        <li>
+          <a href="/articles">Articles</a>
+        </li>
+      </ul>
+    </nav>
+    <main>
+      <section>
+        <h2>Author Info</h2>
+        <a href="/authors/<%= author._id %>/edit">Edit</a>
+        <ul>
+          <li>Name: <%= author.name %></li>
+        </ul>
+      </section>
+      <form action="/authors/<%= author._id %>?_method=DELETE" method="POST">
+        <input type="submit" value="Delete" />
+      </form>
 
-			<section>
-				<h2>Author Articles</h2>
-				<ul>
-					<% author.articles.forEach(article => { %>
-					<li>
-						<a href="/articles/<%= article._id %>"> <%= article.title %></a>
-					</li>
-					<% }) %>
-				</ul>
-			</section>
-		</main>
-	</body>
+      <section>
+        <h2>Author Articles</h2>
+        <ul>
+          <% author.articles.forEach(article => { %>
+          <li>
+            <a href="/articles/<%= article._id %>"> <%= article.title %></a>
+          </li>
+          <% }) %>
+        </ul>
+      </section>
+    </main>
+  </body>
 </html>
