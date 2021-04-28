@@ -34,8 +34,13 @@ router.get("/", async function (req, res) {
   // try to do stuff
   try {
     const query = req.query.name
-      ? { name: { $regex: req.query.name, $options: "i" } }
-      : {};
+      ? {
+          name: { $regex: req.query.name, $options: "i" },
+          user: req.session.currentUser.id,
+        }
+      : {
+          user: req.session.currentUser.id,
+        };
 
     const allAuthors = await db.Author.find(query);
     const context = { authors: allAuthors };
@@ -68,6 +73,9 @@ router.get("/:id", function (req, res) {
 
 // Create
 router.post("/", function (req, res) {
+  // add the current session user to the req.body
+  req.body.user = req.session.currentUser.id;
+
   db.Author.create(req.body, function (err, createdAuthor) {
     if (err) return res.send(err);
 
